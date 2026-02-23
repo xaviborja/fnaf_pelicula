@@ -266,6 +266,7 @@
 
       <span class="no-signal" id="noSignal" style="display: none;">Sin senal</span>
       <img id="cameraImage" src="" alt="Camera feed" style="display: none;">
+      <video id="cameraVideo" src="img/cam1.mp4" preload="auto" muted playsinline style="display: none; max-width: 100%; max-height: 100%; object-fit: contain; z-index: 1; filter: brightness(0.8) contrast(1.1);"></video>
 
       <div class="timestamp" id="timestamp"></div>
     </div>
@@ -320,24 +321,34 @@
       // Actualizar label
       document.getElementById('cameraLabel').textContent = cameras[camId].label;
 
-      // Cargar imagen
+      // Cargar imagen o video
       const img = document.getElementById('cameraImage');
+      const video = document.getElementById('cameraVideo');
       const noSignal = document.getElementById('noSignal');
 
       img.style.display = 'none';
+      video.style.display = 'none';
+      video.pause();
       noSignal.style.display = 'none';
 
-      const testImg = new Image();
-      testImg.onload = function () {
-        img.src = imageToLoad;
-        img.style.display = 'block';
-        noSignal.style.display = 'none';
-      };
-      testImg.onerror = function () {
-        img.style.display = 'none';
-        noSignal.style.display = 'block';
-      };
-      testImg.src = imageToLoad;
+      // CAM 1A: aleatoriamente mostrar video o imagen
+      const showVideo = camId === 1 && cam1ClickCount !== 5 && Math.random() < 0.5;
+
+      if (showVideo) {
+        video.currentTime = 0;
+        video.style.display = 'block';
+        video.play();
+      } else {
+        const testImg = new Image();
+        testImg.onload = function () {
+          img.src = imageToLoad;
+          img.style.display = 'block';
+        };
+        testImg.onerror = function () {
+          noSignal.style.display = 'block';
+        };
+        testImg.src = imageToLoad;
+      }
     }
 
     // Reloj en tiempo real
